@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kasturi's 6-Month Embedded Roadmap</title>
+<style>
+  :root {
+    --bg: #0f1117;
+    --bg2: #1a1d27;
+    --bg3: #22263a;
+    --border: rgba(255,255,255,0.08);
+    --border2: rgba(255,255,255,0.15);
+    --text: #e8eaf0;
+    --text2: #8b90a8;
+    --text3: #555a72;
+    --green: #3dd68c;
+    --green-bg: rgba(61,214,140,0.08);
+    --green-border: rgba(61,214,140,0.25);
+    --amber: #f5a623;
+    --amber-bg: rgba(245,166,35,0.08);
+    --amber-border: rgba(245,166,35,0.25);
+    --blue: #5b8dee;
+    --blue-bg: rgba(91,141,238,0.08);
+    --red: #ef5b5b;
+    --font: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    --mono: 'JetBrains Mono', 'Fira Code', monospace;
+    --radius: 10px;
+    --radius-sm: 6px;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  body { background: var(--bg); color: var(--text); font-family: var(--font); font-size: 14px; line-height: 1.6; min-height: 100vh; }
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
+  /* Header */
+  .header { padding: 32px 24px 24px; border-bottom: 1px solid var(--border); max-width: 860px; margin: 0 auto; }
+  .header-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; flex-wrap: wrap; }
+  .header-label { font-size: 11px; font-weight: 500; color: var(--green); letter-spacing: 0.1em; text-transform: uppercase; margin-bottom: 6px; }
+  .header-title { font-size: 22px; font-weight: 600; color: var(--text); }
+  .header-sub { font-size: 13px; color: var(--text2); margin-top: 4px; }
+  .reset-btn { font-size: 12px; padding: 6px 12px; border-radius: var(--radius-sm); border: 1px solid var(--border2); background: transparent; color: var(--text2); cursor: pointer; font-family: var(--font); white-space: nowrap; transition: all 0.15s; }
+  .reset-btn:hover { border-color: var(--red); color: var(--red); }
+
+  /* Stats */
+  .stats-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; padding: 20px 24px; max-width: 860px; margin: 0 auto; }
+  .stat { background: var(--bg2); border: 1px solid var(--border); border-radius: var(--radius); padding: 14px 16px; }
+  .stat-val { font-size: 24px; font-weight: 600; font-family: var(--mono); }
+  .stat-val.green { color: var(--green); }
+  .stat-lbl { font-size: 11px; color: var(--text3); margin-top: 2px; text-transform: uppercase; letter-spacing: 0.05em; }
+  .prog-wrap { padding: 0 24px 16px; max-width: 860px; margin: 0 auto; }
+  .prog-track { height: 3px; background: var(--border); border-radius: 2px; overflow: hidden; }
+  .prog-fill { height: 100%; background: var(--green); border-radius: 2px; transition: width 0.4s; }
+
+  /* Phase tabs */
+  .tabs-wrap { padding: 0 24px 16px; max-width: 860px; margin: 0 auto; overflow-x: auto; }
+  .tabs { display: flex; gap: 6px; width: max-content; }
+  .tab { padding: 7px 14px; border-radius: var(--radius-sm); border: 1px solid var(--border); background: var(--bg2); color: var(--text2); font-size: 12px; cursor: pointer; font-family: var(--font); white-space: nowrap; transition: all 0.15s; }
+  .tab:hover { border-color: var(--border2); color: var(--text); }
+  .tab.on { border-color: var(--green-border); background: var(--green-bg); color: var(--green); font-weight: 500; }
+
+  /* Phase content */
+  .content { padding: 0 24px 40px; max-width: 860px; margin: 0 auto; }
+  .pview { display: none; }
+  .pview.on { display: block; }
+
+  /* Week block */
+  .week { border: 1px solid var(--border); border-radius: var(--radius); margin-bottom: 10px; overflow: hidden; }
+  .whdr { padding: 12px 16px; background: var(--bg2); display: flex; justify-content: space-between; align-items: center; cursor: pointer; user-select: none; transition: background 0.1s; }
+  .whdr:hover { background: var(--bg3); }
+  .wtitle { font-size: 13px; font-weight: 500; }
+  .wmeta { display: flex; align-items: center; gap: 8px; }
+  .wprog { font-size: 11px; color: var(--text3); font-family: var(--mono); }
+  .wbadge { font-size: 11px; padding: 2px 8px; border-radius: 20px; border: 1px solid var(--border); color: var(--text3); }
+  .chev { font-size: 10px; color: var(--text3); transition: transform 0.2s; display: inline-block; }
+  .chev.open { transform: rotate(180deg); }
+  .wbody { display: none; border-top: 1px solid var(--border); }
+  .wbody.open { display: block; }
+
+  /* Day row */
+  .drow { display: grid; grid-template-columns: 88px 1fr; border-bottom: 1px solid var(--border); }
+  .drow:last-child { border-bottom: none; }
+  .dlbl { padding: 12px 10px; background: var(--bg); font-size: 11px; font-weight: 500; color: var(--text3); border-right: 1px solid var(--border); }
+
+  /* Tasks */
+  .tasks { padding: 6px 12px; }
+  .ti { display: flex; align-items: flex-start; gap: 10px; padding: 6px 0; border-bottom: 1px solid var(--border); }
+  .ti:last-child { border-bottom: none; }
+  .cb { width: 16px; height: 16px; min-width: 16px; border: 1px solid var(--border2); border-radius: 4px; cursor: pointer; margin-top: 2px; display: flex; align-items: center; justify-content: center; font-size: 10px; transition: all 0.15s; }
+  .cb:hover { border-color: var(--green); }
+  .cb.done { background: var(--green-bg); border-color: var(--green-border); color: var(--green); }
+  .tt { font-size: 12px; line-height: 1.65; flex: 1; color: var(--text); }
+  .tt.done { color: var(--text3); text-decoration: line-through; }
+
+  /* Resource links */
+  .res { padding: 4px 12px 10px; display: flex; flex-wrap: wrap; gap: 5px; }
+  .rl { font-size: 11px; border: 1px solid var(--border); padding: 3px 9px; border-radius: 20px; cursor: pointer; text-decoration: none; display: inline-flex; align-items: center; gap: 4px; transition: border-color 0.15s; }
+  .rl:hover { border-color: var(--border2); }
+  .rl.yt { color: var(--red); }
+  .rl.yt:hover { border-color: var(--red); }
+  .rl.book { color: var(--blue); }
+  .rl.book:hover { border-color: var(--blue); }
+
+  /* Checkpoint + warning */
+  .cp { margin: 10px 12px 12px; background: var(--green-bg); border: 1px solid var(--green-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--green); }
+  .cp-l { font-weight: 600; font-size: 11px; margin-bottom: 3px; text-transform: uppercase; letter-spacing: 0.06em; opacity: 0.7; }
+  .warn { margin: 6px 12px 12px; background: var(--amber-bg); border: 1px solid var(--amber-border); border-radius: var(--radius-sm); padding: 10px 14px; font-size: 12px; color: var(--amber); }
+
+  @media(max-width:600px){
+    .stats-row{grid-template-columns:repeat(2,1fr);}
+    .drow{grid-template-columns:70px 1fr;}
+    .header-title{font-size:18px;}
+  }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="header-top">
+    <div>
+      <div class="header-label">Embedded Systems Roadmap</div>
+      <div class="header-title">Kasturi's 6-Month Plan</div>
+      <div class="header-sub">OS fundamentals → ThreadX internals → Linux kernel → Build → Apply</div>
+    </div>
+    <button class="reset-btn" onclick="resetAll()">Reset progress</button>
+  </div>
+</div>
+
+<div class="stats-row">
+  <div class="stat"><div class="stat-val green" id="sd">0</div><div class="stat-lbl">Done</div></div>
+  <div class="stat"><div class="stat-val" id="st">0</div><div class="stat-lbl">Total</div></div>
+  <div class="stat"><div class="stat-val" id="sp">0%</div><div class="stat-lbl">Complete</div></div>
+  <div class="stat"><div class="stat-val" id="sw">M1</div><div class="stat-lbl">Current phase</div></div>
+</div>
+<div class="prog-wrap"><div class="prog-track"><div class="prog-fill" id="bf" style="width:0%"></div></div></div>
+
+<div class="tabs-wrap">
+  <div class="tabs">
+    <button class="tab on" onclick="showP(0,this)">M1: OS + C basics</button>
+    <button class="tab" onclick="showP(1,this)">M2: Interrupts + ARM</button>
+    <button class="tab" onclick="showP(2,this)">M3: ThreadX deep</button>
+    <button class="tab" onclick="showP(3,this)">M4: Linux kernel</button>
+    <button class="tab" onclick="showP(4,this)">M5: Build project</button>
+    <button class="tab" onclick="showP(5,this)">M6: Apply</button>
+  </div>
+</div>
+
+<div class="content">
+  <div id="p0" class="pview on"></div>
+  <div id="p1" class="pview"></div>
+  <div id="p2" class="pview"></div>
+  <div id="p3" class="pview"></div>
+  <div id="p4" class="pview"></div>
+  <div id="p5" class="pview"></div>
+</div>
+
+<script>
+const D=[
+  {phase:0,weeks:[
+    {t:"Week 1 — What an OS actually does",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Watch: 'Intro to Operating Systems' — Neso Academy (30 min). Big picture first.",r:[{l:"▶ Neso: OS intro",u:"https://www.youtube.com/watch?v=vBURTt97EkA",y:1},{l:"📖 OSTEP Ch 1 (free)",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/dialogue-threeeasy.pdf"}]},
+        {t:"Read OSTEP Ch 2–4 (Processes). Draw process state diagram on paper: ready → running → blocked → ready."}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Watch: 'Processes and Process Management' — Hussein Nasser (20 min).",r:[{l:"▶ Hussein Nasser: processes",u:"https://www.youtube.com/watch?v=4rLW7zg21gI",y:1},{l:"📖 Bovet Ch 3 (Processes)",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]},
+        {t:"Write a 30-line C program: fork a child, print PID, parent waits. Compile on WSL/Linux."}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Read OSTEP Ch 13–16 (Virtual Memory). Why can two processes share the same pointer but see different data?",r:[{l:"📖 OSTEP Ch 13",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/vm-intro.pdf"},{l:"▶ Virtual memory explained",u:"https://www.youtube.com/watch?v=qcBIvnQt0Bw",y:1}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Review only. No new material. Explain context switch out loud without notes."}],
+      cp:"You can explain process states, context switch, and virtual memory without notes."}
+    ]},
+    {t:"Week 2 — Memory management",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Read OSTEP Ch 17–19 (Free space, Paging). Draw how malloc works at OS level.",r:[{l:"📖 OSTEP Ch 17",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/vm-freespace.pdf"},{l:"▶ How malloc works",u:"https://www.youtube.com/watch?v=UTii6dZANmo",y:1}]},
+        {t:"Read Bovet Ch 2 (Memory Addressing) — Linux-specific implementation of what OSTEP explains.",r:[{l:"📖 Bovet Ch 2",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Write a fixed-block memory pool allocator in C from scratch (~80 lines). Allocate 10, free 3, allocate 2 more.",r:[{l:"📖 Embedded malloc reference",u:"https://github.com/embeddedartistry/embedded-resources/tree/master/examples/c/malloc"}]},
+        {t:"Answer in writing: why does ThreadX use fixed-size pools instead of malloc? What crash does malloc cause in RTOS?"}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Read Barr Group: 'volatile keyword in C'. Essential, not optional.",r:[{l:"📖 Barr: volatile in C",u:"https://barrgroup.com/blog/how-use-cs-volatile-keyword"},{l:"▶ volatile explained",u:"https://www.youtube.com/watch?v=KJgHZhqPDqY",y:1}]},
+        {t:"Find every 'volatile' in your work codebase. Write one sentence explaining why each one is there."}
+      ]},
+      {d:"Sun",tasks:[{t:"Review. Build mental map: OS concepts (OSTEP) → Linux implementation (Bovet) → embedded constraints (Barr)."}],
+      cp:"You built a memory pool allocator. volatile is second nature. You understand why embedded avoids malloc."}
+    ]},
+    {t:"Week 3 — Scheduling and concurrency",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Watch: 'CPU Scheduling' — Neso Academy (4 short videos ~45 min). Draw Gantt charts for each algorithm.",r:[{l:"▶ Neso: CPU scheduling",u:"https://www.youtube.com/watch?v=EWkQl0n0w5M",y:1},{l:"📖 OSTEP Ch 7–9",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/cpu-sched.pdf"}]},
+        {t:"Read Bovet Ch 7 (Process Scheduling). Compare Linux CFS to what OSTEP explains about scheduling policy.",r:[{l:"📖 Bovet Ch 7",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Read OSTEP Ch 26–28 (Threads + Locks). Run the race condition example. Watch it fail.",r:[{l:"📖 OSTEP Ch 26",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/threads-intro.pdf"},{l:"▶ Race conditions visualized",u:"https://www.youtube.com/watch?v=FY9livorrJI",y:1}]},
+        {t:"Write a race condition in C using pthreads. Fix it with a mutex. Run both. See the difference."}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Read OSTEP Ch 30 (Condition Variables). Implement producer-consumer with 1 mutex + 2 condition variables.",r:[{l:"📖 OSTEP Ch 30",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/threads-cv.pdf"},{l:"▶ Producer consumer problem",u:"https://www.youtube.com/watch?v=Qx3P2wazwI0",y:1}]},
+        {t:"Find every semaphore in your GPS codebase. What problem does each one actually solve?"}
+      ]},
+      {d:"Sun",tasks:[{t:"Review. Write the producer-consumer solution from memory without looking it up."}],
+      cp:"You can write and debug a race condition. You understand why semaphores exist at first-principles level."}
+    ]},
+    {t:"Week 4 — C depth: pointers, GDB, linker",b:"2 hrs/day",days:[
+      {d:"Mon–Wed",tasks:[
+        {t:"Beej's Guide to C Ch 1–14. Write every code example yourself. Focus: pointer arithmetic, function pointers, volatile.",r:[{l:"📖 Beej's Guide (free)",u:"https://beej.us/guide/bgc/"},{l:"▶ Pointers in C — CS50",u:"https://www.youtube.com/watch?v=XISnO2YhnsY",y:1}]},
+        {t:"Practice: write 10 pointer problems. Pointer to function, array of pointers, pointer to struct with malloc."}
+      ]},
+      {d:"Thu–Fri",tasks:[
+        {t:"Learn GDB: breakpoints, watch variables, inspect stack frames, print memory regions.",r:[{l:"📖 Memfault: GDB for firmware",u:"https://interrupt.memfault.com/blog/gdb-for-firmware-engineers"},{l:"▶ GDB tutorial",u:"https://www.youtube.com/watch?v=svG6OPyKsrw",y:1}]},
+        {t:"Debug a real or simulated crash using GDB only. Find the faulting line without printf."}
+      ]},
+      {d:"Sat",tasks:[
+        {t:"Read Linkers and Loaders Ch 1–3. Understand what the linker actually does to your .o files.",r:[{l:"📖 Linkers and Loaders (free)",u:"https://www.iecc.com/linker/"},{l:"▶ Linker scripts explained",u:"https://www.youtube.com/watch?v=B7oKdUvRhQQ",y:1}]},
+        {t:"Open a linker script from your work project. Identify each SECTION and what it holds."}
+      ]},
+      {d:"Sun",tasks:[{t:"Review month 1. You now have real fundamentals. Month 2 goes lower."}],
+      cp:"Month 1 done. You can read a linker script, debug with GDB, and explain OS concepts from first principles."}
+    ]}
+  ]},
+  {phase:1,weeks:[
+    {t:"Week 5 — Interrupts and I/O",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Watch: 'Interrupts and Interrupt Handling' — Low Level Learning (20 min). Best visual intro.",r:[{l:"▶ Low Level: interrupts",u:"https://www.youtube.com/watch?v=2Hm8eEHsgls",y:1},{l:"📖 OSTEP Ch 36–37",u:"https://pages.cs.wisc.edu/~remzi/OSTEP/file-devices.pdf"}]},
+        {t:"Read Bovet Ch 4 (Interrupts and Exceptions). Linux implementation of what you just watched.",r:[{l:"📖 Bovet Ch 4",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Read Memfault: ARM Cortex-M interrupts — NVIC, interrupt priority, preemption.",r:[{l:"📖 Memfault: ARM interrupts",u:"https://interrupt.memfault.com/blog/arm-cortex-m-exceptions-and-nvic"},{l:"▶ ARM Cortex-M NVIC",u:"https://www.youtube.com/watch?v=uFBNf7F3l60",y:1}]},
+        {t:"Write down: why must you NEVER call a blocking function inside an ISR? What actually happens?"}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Read Memfault 'Zero to main' parts 1 and 2. What happens from power-on to your first line of code?",r:[{l:"📖 Zero to main pt 1",u:"https://interrupt.memfault.com/blog/zero-to-main-1"},{l:"📖 Zero to main pt 2",u:"https://interrupt.memfault.com/blog/zero-to-main-2-bare-metal-c"}]},
+        {t:"Watch: 'How embedded C programs run' — Jacob Sorber. Ties everything together.",r:[{l:"▶ Jacob Sorber: embedded C runtime",u:"https://www.youtube.com/watch?v=aCVFEHXk5dQ",y:1}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Draw from memory: power-on → bootloader → startup code → main(). Every step."}],
+      cp:"You can explain full power-on to main() sequence and why blocking in an ISR causes a crash."}
+    ]},
+    {t:"Week 6 — ARM architecture and HardFault debugging",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Read Memfault: 'How to debug a HardFault on ARM Cortex-M'. Read it twice.",r:[{l:"📖 Memfault: HardFault debug",u:"https://interrupt.memfault.com/blog/cortex-m-hardfault-debug"},{l:"▶ Cortex-M fault handling",u:"https://www.youtube.com/watch?v=bGcf0y2Ybbo",y:1}]},
+        {t:"Find a past crash from your work. Reconstruct the root cause using what you now know about fault registers."}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Watch: Phil's Lab — 'STM32 bare metal' series (first 3 videos). Best practical ARM intro on YouTube.",r:[{l:"▶ Phil's Lab: STM32 bare metal",u:"https://www.youtube.com/playlist?list=PLXSyc11qLa1a4Tqbz228dPZfMrs-KRpzA",y:1},{l:"📖 ARM Cortex-M4 TRM",u:"https://developer.arm.com/documentation/100166/latest"}]},
+        {t:"Read ARM Cortex-M4 TRM: Programmer's model and Exception model sections only."}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Read Bovet Ch 5 (Kernel Synchronization) + Ch 6 (Timing). How Linux handles what your RTOS handles.",r:[{l:"📖 Bovet Ch 5",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]},
+        {t:"Read Memfault: watchdog timer best practices. Directly useful at your current job right now.",r:[{l:"📖 Memfault: watchdog timers",u:"https://interrupt.memfault.com/blog/firmware-watchdog-best-practices"}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Given a HardFault, identify: null dereference, stack overflow, or alignment fault from registers alone."}],
+      cp:"Month 2 done. You understand ARM exceptions, can debug HardFaults, and know how Linux handles the same problems."}
+    ]}
+  ]},
+  {phase:2,weeks:[
+    {t:"Week 7 — ThreadX scheduler source",b:"2 hrs/day",days:[
+      {d:"Mon–Wed",tasks:[
+        {t:"Watch: 'RTOS fundamentals' — Fastbit Embedded (3 videos). Concepts before source code.",r:[{l:"▶ Fastbit: RTOS fundamentals",u:"https://www.youtube.com/playlist?list=PLtVUYRe-Z-mfKO0lg_-MBvwWl6VjWT8Dt",y:1},{l:"📖 ThreadX source (GitHub)",u:"https://github.com/eclipse-threadx/threadx"}]},
+        {t:"Clone Azure RTOS ThreadX. Read tx_thread_create.c and tx_thread_schedule.c line by line."}
+      ]},
+      {d:"Thu–Sat",tasks:[
+        {t:"Draw the TX_THREAD struct. Which fields control scheduling? Which track state?"},
+        {t:"Read tx_semaphore_get.c and tx_mutex_get.c. Trace every step when a thread blocks.",r:[{l:"📖 ThreadX user guide Ch 3",u:"https://learn.microsoft.com/en-us/azure/rtos/threadx/chapter3"}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Draw from memory: Thread A waits on semaphore → Thread B signals → A resumes. All state transitions."}],
+      cp:"You can walk through a semaphore wait/signal cycle in ThreadX source and explain each step."}
+    ]},
+    {t:"Week 8 — Priority inversion + writing your article",b:"2 hrs/day",days:[
+      {d:"Mon–Tue",tasks:[
+        {t:"Watch: 'Priority Inversion explained' (10 min). Then read the Mars Pathfinder NASA bug report.",r:[{l:"▶ Priority inversion",u:"https://www.youtube.com/watch?v=PB9fPFtMK5I",y:1},{l:"📖 Mars Pathfinder bug",u:"https://www.cs.unc.edu/~anderson/teach/comp790/papers/mars_pathfinder_long_version.html"}]},
+        {t:"Find the exact lines in tx_mutex_get.c that implement priority inheritance. Annotate them."}
+      ]},
+      {d:"Wed–Thu",tasks:[
+        {t:"Go through every ThreadX API call in your GPS project. Write one sentence per call at implementation level."},
+        {t:"Read Memfault: RTOS concepts article. Answer every question without looking anything up.",r:[{l:"📖 Memfault: RTOS concepts",u:"https://interrupt.memfault.com/blog/rtos-concepts"}]}
+      ]},
+      {d:"Fri–Sat",tasks:[
+        {t:"Draft blog post: 'What I learned reading the ThreadX scheduler source code.' 900 words max."},
+        {t:"Edit. Remove every sentence without a specific technical claim. Add one diagram you drew yourself."}
+      ]},
+      {d:"Sun",tasks:[
+        {t:"Publish on Medium or dev.to. Add link to LinkedIn and GitHub.",r:[{l:"📖 Medium",u:"https://medium.com/new-story"},{l:"📖 dev.to",u:"https://dev.to/new"}]}
+      ],warn:"Only write about open-source ThreadX code. Never share proprietary employer code.",
+      cp:"Month 3 done. Published article live. This is now a real resume asset."}
+    ]}
+  ]},
+  {phase:3,weeks:[
+    {t:"Week 9–10 — Linux kernel basics + device drivers",b:"2 hrs/day",days:[
+      {d:"Week 9: setup",tasks:[
+        {t:"Watch: 'Linux Kernel Development overview' (30 min). Big picture before details.",r:[{l:"▶ Linux kernel overview",u:"https://www.youtube.com/watch?v=zHFhSn-cXKo",y:1}]},
+        {t:"Set up Ubuntu in VirtualBox or enable WSL2. Non-negotiable — you need real Linux.",r:[{l:"📖 WSL2 install guide",u:"https://learn.microsoft.com/en-us/windows/wsl/install"}]}
+      ]},
+      {d:"Week 9: kernel module",tasks:[
+        {t:"Read LKMPG Ch 1–3. Write a module that prints on load/unload. Compile, insmod, check dmesg.",r:[{l:"📖 LKMPG (free, 2024)",u:"https://sysprog21.github.io/lkmpg/"},{l:"▶ First kernel module",u:"https://www.youtube.com/watch?v=4tgluSJIM0g",y:1}]},
+        {t:"Read Bovet Ch 1 (Introduction). Now you have context — this will make sense.",r:[{l:"📖 Bovet Ch 1",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"}]}
+      ]},
+      {d:"Week 9: system calls",tasks:[
+        {t:"Read Bovet Ch 10 (System Calls). Understand how user space talks to kernel space.",r:[{l:"📖 Bovet Ch 10",u:"https://www.oreilly.com/library/view/understanding-the-linux/0596005652/"},{l:"▶ System calls explained",u:"https://www.youtube.com/watch?v=lhToWeuWWfw",y:1}]},
+        {t:"Write a user-space program that makes a raw system call using syscall(). Print the return value."}
+      ]},
+      {d:"Week 10: drivers",tasks:[
+        {t:"Watch: 'Linux Device Driver Tutorial' — 4-part series (~1 hr total). Best practical driver intro.",r:[{l:"▶ Linux device driver series",u:"https://www.youtube.com/watch?v=juGNPLdjLH4",y:1},{l:"📖 LDD3 Ch 1–3 (free)",u:"https://lwn.net/Kernel/LDD3/"}]},
+        {t:"Write a character device driver: /dev/mydev. Store what you write, return it on read. ~150 lines C.",r:[{l:"▶ Char device tutorial",u:"https://www.youtube.com/watch?v=JIbFKTsFWKE",y:1}]}
+      ]},
+      {d:"Week 10: device tree",tasks:[
+        {t:"Read: Device Tree for Dummies. Open a Raspberry Pi device tree. Identify 3 peripheral nodes.",r:[{l:"📖 Device Tree for Dummies",u:"https://elinux.org/Device_Tree_for_Dummies"},{l:"▶ Device tree explained",u:"https://www.youtube.com/watch?v=m_NyYEBxfn8",y:1}]},
+        {t:"Read Bovet Ch 13 (I/O Architecture and Device Drivers). Read Memfault embedded Linux debugging.",r:[{l:"📖 Memfault: Linux debugging",u:"https://interrupt.memfault.com/blog/embedded-linux-debugging"}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Month 4 done. Two kernel modules on GitHub. You can explain the Linux driver model to an interviewer."}],
+      cp:"Month 4 done. Two kernel modules, device tree understanding, driver model solid."}
+    ]}
+  ]},
+  {phase:4,weeks:[
+    {t:"Week 11–12 — Build one real project",b:"2.5 hrs/day",days:[
+      {d:"Week 11: choose",tasks:[
+        {t:"Option A (best): Mini RTOS on STM32 Blue Pill. Round-robin + priority scheduler from scratch. ~₹200.",r:[{l:"📖 STM32 Blue Pill (Robu.in)",u:"https://robu.in/product/stm32f103c8t6-minimum-system-board/"},{l:"▶ STM32 bare metal start",u:"https://www.youtube.com/watch?v=sFXBd-ZJPLY",y:1}]},
+        {t:"Option B: Linux char device with timer interrupt on Raspberry Pi Zero (~₹600)."},
+        {t:"Option C (no hardware): User-space RTOS simulator in C. Simulates threads + scheduler. Zero cost."},
+        {t:"Create GitHub repo today. Write README stub. First commit today — even a blank main.c."}
+      ]},
+      {d:"Week 11: build core",tasks:[
+        {t:"Build the core: context switch working between 2 tasks. Commit every day with descriptive messages."},
+        {t:"When it breaks (it will): use GDB. The debugging is the learning. Do not skip to solutions."}
+      ]},
+      {d:"Week 12: add depth",tasks:[
+        {t:"Add priority preemption. High priority task preempts low priority. Prove it with a test."},
+        {t:"Add one more feature: semaphore (A), DMA (B), or message queue (C). Write inline comments explaining WHY."}
+      ]},
+      {d:"Week 12: document",tasks:[
+        {t:"Write README: problem, architecture diagram, what you built, what you learned, known limitations."},
+        {t:"Record 2-min demo video. Upload to YouTube unlisted. Link from README."},
+        {t:"Write second blog post: 'Building a mini RTOS — what broke first'. Publish it.",r:[{l:"📖 Medium",u:"https://medium.com/new-story"}]}
+      ]},
+      {d:"Sun",tasks:[{t:"Project live on GitHub with README, demo video, commit history. Month 5 done."}],
+      warn:"Hardware matters. A ₹200 STM32 board makes option A significantly more impressive than simulation.",
+      cp:"Month 5 done. This is the strongest line on your resume."}
+    ]}
+  ]},
+  {phase:5,weeks:[
+    {t:"Week 13–14 — Resume, prep, and apply",b:"1.5 hrs/day",days:[
+      {d:"Resume",tasks:[
+        {t:"Add GitHub project to resume top. One bullet = what you built + one concrete outcome."},
+        {t:"Rewrite every Radisys bullet with a number. Even rough: '~30% debug time reduction'."},
+        {t:"Add explicit: 'ThreadX scheduler internals, context switching, priority inheritance'."},
+        {t:"Remove MATLAB canal project. Remove generic summary. Write one specific positioning sentence."}
+      ]},
+      {d:"Target roles",tasks:[
+        {t:"Bengaluru targets: Bosch RBEI, Continental, Harman, Qualcomm, Ather Energy, Ola Electric, Zepto, MediaTek."},
+        {t:"Filter JDs by: 'embedded Linux', 'RTOS', 'BSP', 'device drivers', 'kernel'. Save 15–20 roles."}
+      ]},
+      {d:"Technical prep",tasks:[
+        {t:"Practice without notes: context switching, priority inversion, memory-mapped I/O, volatile, ISR rules, mutex vs semaphore.",r:[{l:"📖 Embedded interview questions",u:"https://github.com/Embedded-Systems-Guide/embedded-interview-questions"}]},
+        {t:"Practice drawing: ThreadX state machine, Linux module lifecycle, embedded memory layout (stack/heap/BSS/data/text)."}
+      ]},
+      {d:"Coding prep",tasks:[
+        {t:"Practice: circular buffer, mutex from atomics, state machine, bit manipulation. Not leetcode tree problems.",r:[{l:"▶ Embedded C interview prep",u:"https://www.youtube.com/watch?v=GDhgHRXaNk0",y:1}]},
+        {t:"Do 2 mock interviews on Pramp. Talk about your project for 20 minutes without notes.",r:[{l:"📖 Pramp",u:"https://www.pramp.com"}]}
+      ]},
+      {d:"Apply",tasks:[
+        {t:"3–4 applications per week. Customise each: one sentence about their product and how you connect."},
+        {t:"Mention GitHub project and blog posts in every application."},
+        {t:"One referral request from your network. One referral beats 20 cold applications."}
+      ]},
+      {d:"Stay current",tasks:[
+        {t:"Follow weekly: Memfault blog, Embedded Artistry, Phil's Lab YouTube.",r:[{l:"📖 Memfault blog",u:"https://interrupt.memfault.com"},{l:"▶ Phil's Lab",u:"https://www.youtube.com/@PhilsLab",y:1},{l:"📖 Embedded Artistry",u:"https://embeddedartistry.com"}]},
+        {t:"Keep committing to GitHub during job search. Active history matters."}
+      ]},
+      {d:"Sun",tasks:[{t:"Review week: applications sent, responses, what to improve."}],
+      cp:"Month 6 done. 15–20 applications sent. 3–5 conversations started. You can talk about your project for 20 minutes."}
+    ]}
+  ]}
+];
+
+let C={};
+try{C=JSON.parse(localStorage.getItem('emb_k2')||'{}');}catch(e){}
+function save(){try{localStorage.setItem('emb_k2',JSON.stringify(C));}catch(e){}}
+function tid(pi,wi,di,ti){return `${pi}_${wi}_${di}_${ti}`;}
+function countAll(){let t=0,d=0;D.forEach((ph,pi)=>ph.weeks.forEach((wk,wi)=>wk.days.forEach((day,di)=>day.tasks.forEach((_,ti)=>{t++;if(C[tid(pi,wi,di,ti)])d++;}))));return{t,d};}
+function wkCount(pi,wi){let t=0,d=0;D[pi].weeks[wi].days.forEach((day,di)=>day.tasks.forEach((_,ti)=>{t++;if(C[tid(pi,wi,di,ti)])d++;}));return{t,d};}
+function updateStats(){
+  const{t,d}=countAll();
+  document.getElementById('sd').textContent=d;
+  document.getElementById('st').textContent=t;
+  document.getElementById('sp').textContent=t?Math.round(d/t*100)+'%':'0%';
+  document.getElementById('bf').style.width=t?(d/t*100)+'%':'0%';
+  const phases=['M1','M2','M3','M4','M5','M6'];
+  let cur=0;
+  D.forEach((ph,pi)=>{
+    let pt=0,pd=0;
+    ph.weeks.forEach((wk,wi)=>{const c=wkCount(pi,wi);pt+=c.t;pd+=c.d;});
+    if(pd>0&&pd<pt)cur=pi;else if(pd===pt&&pt>0)cur=Math.min(pi+1,5);
+  });
+  document.getElementById('sw').textContent=phases[cur];
+}
+function renderPhase(pi){
+  const cont=document.getElementById('p'+pi);
+  if(cont.dataset.r)return refresh(pi);
+  cont.dataset.r='1';
+  let h='';
+  D[pi].weeks.forEach((wk,wi)=>{
+    const{t,d}=wkCount(pi,wi);
+    h+=`<div class="week"><div class="whdr" onclick="toggleW(this)"><span class="wtitle">${wk.t}</span><div class="wmeta"><span class="wprog" id="wp${pi}_${wi}">${d}/${t}</span><span class="wbadge">${wk.b}</span><span class="chev">▼</span></div></div><div class="wbody">`;
+    wk.days.forEach((day,di)=>{
+      h+=`<div class="drow"><div class="dlbl">${day.d}</div><div><div class="tasks">`;
+      day.tasks.forEach((task,ti)=>{
+        const id=tid(pi,wi,di,ti),ck=C[id];
+        h+=`<div class="ti"><div class="cb${ck?' done':''}" id="cb${id}" onclick="tog('${id}',${pi},${wi})">${ck?'✓':''}</div><span class="tt${ck?' done':''}" id="tt${id}">${task.t}</span></div>`;
+      });
+      h+=`</div>`;
+      const links=day.tasks.flatMap(t=>t.r||[]);
+      if(links.length){h+=`<div class="res">`;links.forEach(l=>{const cls=l.y?'rl yt':'rl book';h+=`<a class="${cls}" href="${l.u}" target="_blank">${l.l}</a>`;});h+=`</div>`;}
+      h+=`</div></div>`;
+    });
+    if(wk.days.some(d=>d.cp)){const cp=wk.days.find(d=>d.cp).cp;h+=`<div class="cp"><div class="cp-l">✓ Checkpoint</div>${cp}</div>`;}
+    if(wk.days.some(d=>d.warn)){const w=wk.days.find(d=>d.warn).warn;h+=`<div class="warn">⚠ ${w}</div>`;}
+    h+=`</div></div>`;
+  });
+  cont.innerHTML=h;updateStats();
+}
+function refresh(pi){
+  D[pi].weeks.forEach((wk,wi)=>{
+    const{t,d}=wkCount(pi,wi);
+    const el=document.getElementById(`wp${pi}_${wi}`);if(el)el.textContent=`${d}/${t}`;
+    wk.days.forEach((day,di)=>day.tasks.forEach((_,ti)=>{
+      const id=tid(pi,wi,di,ti),ck=C[id];
+      const cb=document.getElementById('cb'+id),tt=document.getElementById('tt'+id);
+      if(cb){cb.className='cb'+(ck?' done':'');cb.textContent=ck?'✓':'';}
+      if(tt)tt.className='tt'+(ck?' done':'');
+    }));
+  });updateStats();
+}
+function tog(id,pi){C[id]=!C[id];save();refresh(pi);updateStats();}
+function toggleW(h){const b=h.nextElementSibling,c=h.querySelector('.chev'),o=b.classList.toggle('open');c.classList.toggle('open',o);}
+function showP(i,btn){document.querySelectorAll('.pview').forEach((p,j)=>p.classList.toggle('on',i===j));document.querySelectorAll('.tab').forEach((b,j)=>b.classList.toggle('on',i===j));renderPhase(i);}
+function resetAll(){if(!confirm('Reset all progress?'))return;C={};save();document.querySelectorAll('[data-r]').forEach(el=>{delete el.dataset.r;el.innerHTML='';});const active=document.querySelector('.pview.on');if(active){renderPhase(+active.id.slice(1));}updateStats();}
+renderPhase(0);updateStats();
+</script>
+</body>
+</html>
